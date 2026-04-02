@@ -25,6 +25,10 @@ def get_paginated_list(model, endpoint):
 
     # 4. Eksekusi Pagination
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    args = request.args.to_dict()
+    args.pop('page', None)
+    args.pop('per_page', None)
     
     # 5. Susun Response JSON
     return jsonify({
@@ -36,8 +40,8 @@ def get_paginated_list(model, endpoint):
             'total_items': pagination.total,
             'has_next': pagination.has_next,
             'has_prev': pagination.has_prev,
-            'next_page': url_for(endpoint, page=pagination.next_num, per_page=per_page, _external=True, **request.args) if pagination.has_next else None,
-            'prev_page': url_for(endpoint, page=pagination.prev_num, per_page=per_page, _external=True, **request.args) if pagination.has_prev else None
+            'next_page': url_for(endpoint, page=pagination.next_num, per_page=per_page, _external=True, **args) if pagination.has_next else None,
+            'prev_page': url_for(endpoint, page=pagination.prev_num, per_page=per_page, _external=True, **args) if pagination.has_prev else None,
         }
     })
 
