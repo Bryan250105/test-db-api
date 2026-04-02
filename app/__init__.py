@@ -14,8 +14,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Import and register the Blueprint from the api package
-    from app.api import bp as api_bp
+    # Import and register the Blueprint from the main package
+    from app.main import bp as api_bp
 
     app.register_blueprint(api_bp, url_prefix="/api")
 
