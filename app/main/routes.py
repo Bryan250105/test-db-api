@@ -1,7 +1,7 @@
 import os
 from flask import request, jsonify, url_for, abort
 from functools import wraps
-from app import db
+from app import db, cache
 from app.models import PortCodeList, AirportCodeList
 from app.main import bp
 
@@ -61,11 +61,13 @@ def get_paginated_list(model, endpoint):
 
 @bp.route('/ports', methods=['GET'])
 @require_api_key
+@cache.cached(timeout=3600, query_string=True)
 def get_ports():
     return get_paginated_list(PortCodeList, 'main.get_ports')
 
 @bp.route('/airports', methods=['GET'])
 @require_api_key
+@cache.cached(timeout=3600, query_string=True)
 def get_airports():
     return get_paginated_list(AirportCodeList, 'main.get_airports')
 
