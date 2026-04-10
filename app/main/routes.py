@@ -1,7 +1,19 @@
-from flask import request, jsonify, url_for
+import os
+from flask import request, jsonify, url_for, abort
+from functools import wraps
 from app import db
 from app.models import PortCodeList, AirportCodeList
 from app.main import bp
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Mengambil key dari header 'X-API-KEY'
+        if request.headers.get('X-API-KEY') == os.environ.get('API_KEY'):
+            return f(*args, **kwargs)
+        else:
+            abort(401, description="Invalid or missing API Key")
+    return decorated_function
 
 # Helper function untuk pagination metadata
 def get_paginated_list(model, endpoint):
@@ -48,10 +60,12 @@ def get_paginated_list(model, endpoint):
 # --- ROUTES ---
 
 @bp.route('/ports', methods=['GET'])
+@require_api_key
 def get_ports():
     return get_paginated_list(PortCodeList, 'main.get_ports')
 
 @bp.route('/airports', methods=['GET'])
+@require_api_key
 def get_airports():
     return get_paginated_list(AirportCodeList, 'main.get_airports')
 
